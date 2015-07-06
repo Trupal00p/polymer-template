@@ -1,0 +1,34 @@
+application: polymer-test
+version: default
+runtime: python27
+threadsafe: yes
+api_version: 1
+
+handlers:
+
+ - url: /
+   static_files: index.html
+   upload: index.html
+
+ - url: /data/.*
+   script: main.app
+   secure: always
+
+ - url: /bower_components/
+   static_dir: ../bower_components
+
+ - url: /elements/
+   static_dir: elements
+
+ - url: /images/
+   static_dir: images
+
+ - url: /scripts/
+   static_dir: scripts
+
+ - url: /styles/
+   static_dir: styles
+
+ - url: /.*
+   static_files: 404.html
+   upload: 404.html
