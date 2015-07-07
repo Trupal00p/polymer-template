@@ -83,6 +83,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <iron-icon icon="mail"></iron-icon>
                         <span>Contact 123</span>
                     </a>
+                    <a data-route="signup" href="/signup">
+                        <iron-icon icon="add-circle"></iron-icon>
+                        <span>Sign Up</span>
+                    </a>
+                    <a data-route="signin" href="/signin">
+                        <iron-icon icon="face"></iron-icon>
+                        <span>Sign In</span>
+                    </a>
                 </paper-menu>
             </div>
             <paper-header-panel main mode="waterfall-tall">
@@ -146,6 +154,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </section>
 
                         <section data-route="user-info">
+                            <paper-material elevation="1">
+                                <h2 class="paper-font-display2">
+                                    User:
+                                    <span>{{params.name}}</span>
+                                </h2>
+                                <div>This is
+                                    <span>{{params.name}}</span>'s section</div>
+                            </paper-material>
+                        </section>
+
+                        <section data-route="signup">
+                            <paper-material elevation="1">
+                                <sign-up-form id='sign-up-form'>
+                            </paper-material>
+                        </section>
+
+                        <section data-route="signin">
                             <paper-material elevation="1">
                                 <h2 class="paper-font-display2">
                                     User:

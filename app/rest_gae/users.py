@@ -26,38 +26,55 @@ def get_user_rest_class(**kwd):
 
         model = import_class(kwd.get('user_model', User))
         email_as_username = kwd.get('email_as_username', False)
-        admin_only_user_registration = kwd.get('admin_only_user_registration', False)
-        user_details_permission = kwd.get('user_details_permission', PERMISSION_OWNER_USER)
+        admin_only_user_registration = kwd.get(
+            'admin_only_user_registration', False)
+        user_details_permission = kwd.get(
+            'user_details_permission', PERMISSION_OWNER_USER)
         verify_email_address = kwd.get('verify_email_address', False)
         verification_email = kwd.get('verification_email', None)
-        verification_successful_url = kwd.get('verification_successful_url', None)
+        verification_successful_url = kwd.get(
+            'verification_successful_url', None)
         verification_failed_url = kwd.get('verification_failed_url', None)
         reset_password_url = kwd.get('reset_password_url', None)
         reset_password_email = kwd.get('reset_password_email', None)
         user_policy_callback = [kwd.get('user_policy_callback', None)]
-        send_email_callback = [kwd.get('send_email_callback', None)] # Wrapping in a list so the function won't be turned into a bound method
-        allow_login_for_non_verified_email = kwd.get('allow_login_for_non_verified_email', True)
+        # Wrapping in a list so the function won't be turned into a bound
+        # method
+        send_email_callback = [kwd.get('send_email_callback', None)]
+        allow_login_for_non_verified_email = kwd.get(
+            'allow_login_for_non_verified_email', True)
 
-        # Validate arguments (we do this at this stage in order to raise exceptions immediately rather than while the app is running)
+        # Validate arguments (we do this at this stage in order to raise
+        # exceptions immediately rather than while the app is running)
         if (model != User) and (User not in model.__bases__):
-            raise ValueError('The provided user_model "%s" does not inherit from rest_gae.users.User class' % (model))
+            raise ValueError(
+                'The provided user_model "%s" does not inherit from rest_gae.users.User class' % (model))
         if verify_email_address and not verification_email:
-            raise ValueError('Must set "verification_email" when "verify_email_address" is True')
+            raise ValueError(
+                'Must set "verification_email" when "verify_email_address" is True')
         if verification_email and set(verification_email.keys()) != set(['sender', 'subject', 'body_text', 'body_html']):
-            raise ValueError('"verification_email" must include all of the following keys: sender, subject, body_text, body_html')
+            raise ValueError(
+                '"verification_email" must include all of the following keys: sender, subject, body_text, body_html')
         if verify_email_address and not verification_successful_url:
-            raise ValueError('Must set "verification_successful_url" when "verify_email_address" is True')
+            raise ValueError(
+                'Must set "verification_successful_url" when "verify_email_address" is True')
         if verify_email_address and not verification_failed_url:
-            raise ValueError('Must set "verification_failed_url" when "verify_email_address" is True')
+            raise ValueError(
+                'Must set "verification_failed_url" when "verify_email_address" is True')
         if verify_email_address and not reset_password_url:
-            raise ValueError('Must set "reset_password_url" when "verify_email_address" is True')
+            raise ValueError(
+                'Must set "reset_password_url" when "verify_email_address" is True')
         if verify_email_address and not reset_password_email:
-            raise ValueError('Must set "reset_password_email" when "verify_email_address" is True')
+            raise ValueError(
+                'Must set "reset_password_email" when "verify_email_address" is True')
         if reset_password_email and set(reset_password_email.keys()) != set(['sender', 'subject', 'body_text', 'body_html']):
-            raise ValueError('"reset_password_email" must include all of the following keys: sender, subject, body_text, body_html')
+            raise ValueError(
+                '"reset_password_email" must include all of the following keys: sender, subject, body_text, body_html')
 
-
-        permissions = { 'GET': PERMISSION_ANYONE, 'PUT': PERMISSION_OWNER_USER, 'DELETE': PERMISSION_OWNER_USER, 'POST': PERMISSION_ANYONE } # Used by get_response method when building the HTTP response header 'Access-Control-Allow-Methods'
+        # Used by get_response method when building the HTTP response header
+        # 'Access-Control-Allow-Methods'
+        permissions = {'GET': PERMISSION_ANYONE, 'PUT': PERMISSION_OWNER_USER,
+                       'DELETE': PERMISSION_OWNER_USER, 'POST': PERMISSION_ANYONE}
 
         def __init__(self, request, response):
             self.initialize(request, response)
@@ -68,7 +85,9 @@ def get_user_rest_class(**kwd):
             """Wraps GET/POST/PUT/DELETE methods and adds standard functionality"""
 
             def inner_f(self, model_id):
-                # We make sure the auth session store is using the proper user model (we can't rely on the user initializing it from outside the library)
+                # We make sure the auth session store is using the proper user
+                # model (we can't rely on the user initializing it from outside
+                # the library)
                 self.auth.store.user_model = self.model
 
                 method_name = func.func_name.upper()
@@ -76,12 +95,14 @@ def get_user_rest_class(**kwd):
                 try:
                     # Call original method
                     if model_id:
-                        model_id = model_id[1:] # Get rid of '/' at the beginning
+                        # Get rid of '/' at the beginning
+                        model_id = model_id[1:]
 
                         if model_id == 'me':
                             # 'me' is shorthand for the currently logged-in user
                             if not self.user:
-                                # User tried to retrieve information about himself without being logged-in
+                                # User tried to retrieve information about
+                                # himself without being logged-in
                                 raise self.unauthorized()
 
                             model = self.user
@@ -101,11 +122,9 @@ def get_user_rest_class(**kwd):
 
             return inner_f
 
-
         #
         # REST endpoint methods
         #
-
 
         @rest_method_wrapper
         def get(self, model):
@@ -121,15 +140,15 @@ def get_user_rest_class(**kwd):
                     # Must be an admin
                     return self.permission_denied()
 
-                query = self._filter_query() # Filter the results
-                query = self._order_query(query) # Order the results
-                (results, cursor) = self._fetch_query(query) # Fetch them (with a limit / specific page, if provided)
+                query = self._filter_query()  # Filter the results
+                query = self._order_query(query)  # Order the results
+                # Fetch them (with a limit / specific page, if provided)
+                (results, cursor) = self._fetch_query(query)
 
                 return self.success({
                     'results': results,
                     'next_results_url': self._build_next_query_url(cursor)
-                    })
-
+                })
 
             elif model == 'verify':
                 # It's an email verification link
@@ -151,19 +170,24 @@ def get_user_rest_class(**kwd):
                 # unfortunately the auth interface does not (yet) allow to manipulate
                 # signup tokens concisely
                 try:
-                    user, ts = self.user_model.get_by_auth_token(user_id, signup_token, 'signup')
-                    if not user: raise Exception()
+                    user, ts = self.user_model.get_by_auth_token(
+                        user_id, signup_token, 'signup')
+                    if not user:
+                        raise Exception()
                 except:
                     return self.redirect(self.verification_failed_url)
 
                 # store user data in the session
-                self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
+                self.auth.set_session(
+                    self.auth.store.user_to_dict(user), remember=True)
 
                 if verification_type == 'v':
                     # User verified his email address after registration
 
-                    # Remove signup token, we don't want users to come back with an old link
-                    self.user_model.delete_signup_token(user.get_id(), signup_token)
+                    # Remove signup token, we don't want users to come back
+                    # with an old link
+                    self.user_model.delete_signup_token(
+                        user.get_id(), signup_token)
 
                     # Mark user's email address as verified
                     if not user.is_email_verified:
@@ -182,7 +206,6 @@ def get_user_rest_class(**kwd):
                     # Unknown verification type
                     return self.redirect(self.verification_failed_url)
 
-
             # Return the details of a single user (by ID)
 
             if self.user_details_permission != PERMISSION_ANYONE:
@@ -193,17 +216,16 @@ def get_user_rest_class(**kwd):
                     return self.unauthorized()
 
                 if (self.user_details_permission == PERMISSION_OWNER_USER) and (self.user != model) and (not self.user.is_admin):
-                    # The owning user (and admins) is only one that can view his own user details
+                    # The owning user (and admins) is only one that can view
+                    # his own user details
                     return self.permission_denied()
 
                 if (self.user_details_permission == PERMISSION_ADMIN) and (not self.user.is_admin):
                     # Must be an admin
                     return self.permission_denied()
 
-
             # Return user details
             return self.success(model)
-
 
         @rest_method_wrapper
         def post(self, model):
@@ -227,13 +249,14 @@ def get_user_rest_class(**kwd):
 
                 user = self.user_model.get_by_auth_id(json_data['user_name'])
                 if not user:
-                    raise RESTException('User not found: %s' % json_data['user_name'])
+                    raise RESTException(
+                        'User not found: %s' % json_data['user_name'])
 
                 # Send the reset password email
-                self._send_verification_email(user, self.reset_password_email, True)
+                self._send_verification_email(
+                    user, self.reset_password_email, True)
 
                 return self.success({})
-
 
             elif model and model == 'login':
                 # Login the user
@@ -250,23 +273,23 @@ def get_user_rest_class(**kwd):
                     raise RESTException('Missing password argument')
 
                 try:
-                    user = self.auth.get_user_by_password(json_data['user_name'], json_data['password'], remember=True, save_session=True)
+                    user = self.auth.get_user_by_password(
+                        json_data['user_name'], json_data['password'], remember=True, save_session=True)
                 except (InvalidAuthIdError, InvalidPasswordError) as e:
                     # Login failed
                     return self.permission_denied('Invalid user name / password')
 
                 if not self.allow_login_for_non_verified_email and not user.is_email_verified:
-                    # Don't allow the user to login since he hasn't verified his email address yet.
+                    # Don't allow the user to login since he hasn't verified
+                    # his email address yet.
                     return self.permission_denied('Email address not verified')
 
                 # Login successful
                 return self.success(user)
 
-
             #
             # Register a new user
             #
-
 
             if self.admin_only_user_registration:
                 if not self.user:
@@ -277,19 +300,19 @@ def get_user_rest_class(**kwd):
                     # Must be admin
                     return self.permission_denied()
 
-
             try:
                 # Parse POST data as JSON
                 json_data = json.loads(self.request.body)
             except ValueError, exc:
                 raise RESTException('Invalid JSON POST data')
 
-
             try:
-                # Any exceptions raised due to invalid/missing input will be caught
+                # Any exceptions raised due to invalid/missing input will be
+                # caught
 
                 if self.user_policy_callback is not None and self.user_policy_callback[0] is not None:
-                    json_data = self.user_policy_callback[0](self.user, json_data)
+                    json_data = self.user_policy_callback[
+                        0](self.user, json_data)
 
                 if not 'email' in json_data:
                     raise ValueError('Missing email')
@@ -298,7 +321,8 @@ def get_user_rest_class(**kwd):
                 if not 'password' in json_data:
                     raise ValueError('Missing password')
 
-                user_name = json_data['email'] if self.email_as_username else json_data['user_name']
+                user_name = json_data[
+                    'email'] if self.email_as_username else json_data['user_name']
                 password = json_data['password']
 
                 # Sanitize the input
@@ -307,17 +331,19 @@ def get_user_rest_class(**kwd):
                 json_data.pop('is_email_verified', None)
 
                 if self.user and self.user.is_admin:
-                    # Allow admins to create a new user and set his access level
+                    # Allow admins to create a new user and set his access
+                    # level
                     is_admin = json_data.get('is_admin', False)
                 else:
                     is_admin = False
 
                 json_data.pop('is_admin', None)
 
+                user_properties = {}
 
-                user_properties = { }
-
-                # Make sure only properties defined in the user model will be written (since the parent webapp2 User model is an ExpandoModel)
+                # Make sure only properties defined in the user model will be
+                # written (since the parent webapp2 User model is an
+                # ExpandoModel)
                 for prop_name in self.model._properties.keys():
                     if prop_name in json_data:
                         user_properties[prop_name] = json_data[prop_name]
@@ -325,31 +351,35 @@ def get_user_rest_class(**kwd):
                 unique_properties = ['email']
 
                 user_data = self.model.create_user(
-                        user_name,
-                        unique_properties,
-                        password_raw=password,
-                        is_email_verified=(False if self.verify_email_address else True),
-                        is_admin=is_admin,
-                        **user_properties
-                        )
+                    user_name,
+                    unique_properties,
+                    password_raw=password,
+                    is_email_verified=(
+                        False if self.verify_email_address else True),
+                    is_admin=is_admin,
+                    **user_properties
+                )
 
                 if not user_data[0]:
-                    # Caused due to multiple keys (i.e. the user is already registered or the username/email is taken by someone else)
-                    existing_fields = ['user_name' if s == 'auth_id' else s for s in user_data[1]]
-                    raise RESTException('Unable to register user - the following fields are already registered: %s' % (', '.join(existing_fields)))
-
+                    # Caused due to multiple keys (i.e. the user is already
+                    # registered or the username/email is taken by someone
+                    # else)
+                    existing_fields = [
+                        'user_name' if s == 'auth_id' else s for s in user_data[1]]
+                    raise RESTException(
+                        'Unable to register user - the following fields are already registered: %s' % (', '.join(existing_fields)))
 
                 if self.verify_email_address:
                     # Send email verification
                     user = user_data[1]
-                    self._send_verification_email(user, self.verification_email)
+                    self._send_verification_email(
+                        user, self.verification_email)
 
                 # Return the newly-created user
                 return self.success(user_data[1])
 
             except Exception, exc:
                 raise RESTException('Invalid JSON POST data - %s' % exc)
-
 
         def _send_verification_email(self, user, email, reset_password=False):
             """Sends a verification email to a specific `user` with specific email details (in `email`). Creates a reset password link if `reset_password` is True."""
@@ -359,14 +389,19 @@ def get_user_rest_class(**kwd):
             token = self.user_model.create_signup_token(user_id)
 
             path_url = self.request.path_url
-            path_url = path_url[:-len('verify')] if path_url.endswith('reset') else path_url
+            path_url = path_url[
+                :-len('verify')] if path_url.endswith('reset') else path_url
             path_url = path_url.rstrip('/')
-            verification_params = { 'type': ('v' if not reset_password else 'p'), 'user_id': user_id, 'signup_token': token }
-            verification_url = path_url + '/verify?' + urlencode(verification_params)
+            verification_params = {'type': (
+                'v' if not reset_password else 'p'), 'user_id': user_id, 'signup_token': token}
+            verification_url = path_url + '/verify?' + \
+                urlencode(verification_params)
 
             # Prepare email body
-            email['body_text'] = Template(email['body_text']).render(user=user, verification_url=verification_url)
-            email['body_html'] = Template(email['body_html']).render(user=user, verification_url=verification_url)
+            email['body_text'] = Template(email['body_text']).render(
+                user=user, verification_url=verification_url)
+            email['body_html'] = Template(email['body_html']).render(
+                user=user, verification_url=verification_url)
 
             # Send the email
             if self.send_email_callback:
@@ -382,7 +417,6 @@ def get_user_rest_class(**kwd):
                 message.html = email['body_html']
                 message.send()
 
-
         @rest_method_wrapper
         def put(self, model):
             """PUT endpoint - updates a user's details"""
@@ -391,15 +425,14 @@ def get_user_rest_class(**kwd):
                 # Invalid usage of the endpoint
                 raise RESTException('Must provide user ID for PUT endpoint')
 
-
             if not self.user:
                 # Must be logged-in
                 return self.unauthorized()
 
             if (self.user != model) and (not self.user.is_admin):
-                # The owning user (and admins) is only one that can update his own user details
+                # The owning user (and admins) is only one that can update his
+                # own user details
                 return self.permission_denied()
-
 
             try:
                 # Parse PUT data as JSON
@@ -407,35 +440,37 @@ def get_user_rest_class(**kwd):
             except ValueError, exc:
                 raise RESTException('Invalid JSON PUT data')
 
-
-
             # Update the user
             try:
-                # Any exceptions raised due to invalid/missing input will be caught
+                # Any exceptions raised due to invalid/missing input will be
+                # caught
 
                 if self.user_policy_callback is not None:
                     self.user_policy_callback[0](self.user, json_data)
-                model = self._build_model_from_data(json_data, self.model, model)
+                model = self._build_model_from_data(
+                    json_data, self.model, model)
                 if self.user.is_admin:
                     # Allow the admin to change sensitive properties
                     if json_data.has_key('is_admin'):
                         model.is_admin = json_data['is_admin']
                     if json_data.has_key('is_email_verified'):
-                        model.is_email_verified = json_data['is_email_verified']
+                        model.is_email_verified = json_data[
+                            'is_email_verified']
 
                 if json_data.has_key('password'):
                     # Change password if requested
                     model.set_password(json_data['password'])
 
                 if json_data.has_key('signup_token'):
-                    # Remove signup token (generated from a reset password link), we don't want users to come back with an old link
-                    self.user_model.delete_signup_token(self.user.get_id(), json_data['signup_token'])
+                    # Remove signup token (generated from a reset password
+                    # link), we don't want users to come back with an old link
+                    self.user_model.delete_signup_token(
+                        self.user.get_id(), json_data['signup_token'])
 
                 model.put()
 
             except Exception, exc:
                 raise RESTException('Invalid JSON PUT data - %s' % exc)
-
 
             # Return the updated user details
             return self.success(model)
@@ -453,28 +488,27 @@ def get_user_rest_class(**kwd):
                 return self.unauthorized()
 
             if (self.user != model) and (not self.user.is_admin):
-                # The owning user (and admins) is only one that can delete his own account
+                # The owning user (and admins) is only one that can delete his
+                # own account
                 return self.permission_denied()
-
 
             # Delete the user
             try:
-                self.user_model.remove_unique(model.email, ['email'], email=model.email)
+                self.user_model.remove_unique(
+                    model.email, ['email'], email=model.email)
                 model.key.delete()
             except Exception, exc:
                 raise RESTException('Could not delete user - %s' % exc)
 
-
             # Return the deleted user instance
             return self.success(model)
-
-
 
     # Return the class statically initialized with given input arguments
     return UserRESTHandlerClass
 
 
 class UserRESTHandler(webapp2.Route):
+
     """Returns our RequestHandler for user management. Should be used as part of the WSGIApplication routing:
             app = webapp2.WSGIApplication([('/users', UserRESTHandler(
                                                 user_model='models.my_user_model',
@@ -542,12 +576,14 @@ class UserRESTHandler(webapp2.Route):
 
     def __init__(self, url, **kwd):
 
-        # Make sure we catch both URLs: to '/users' and to '/users/123' and '/users/login'
-        super(UserRESTHandler, self).__init__(url.rstrip(' /') + '<model_id:(/.+)?|/>', get_user_rest_class(**kwd))
-
+        # Make sure we catch both URLs: to '/users' and to '/users/123' and
+        # '/users/login'
+        super(UserRESTHandler, self).__init__(
+            url.rstrip(' /') + '<model_id:(/.+)?|/>', get_user_rest_class(**kwd))
 
 
 class User(webapp2_extras.appengine.auth.models.User):
+
     """The User class - you can inherit the class in order to extend it with additional properties/methods.
     Uses code from: https://github.com/abahgat/webapp2-user-accounts"""
 
@@ -557,51 +593,50 @@ class User(webapp2_extras.appengine.auth.models.User):
 
     class RESTMeta:
         excluded_output_properties = ['password']
-        excluded_input_properties = ['password', 'is_admin', 'is_email_verified' ]
+        excluded_input_properties = [
+            'password', 'is_admin', 'is_email_verified']
         admin_property = 'is_admin'
-
 
     #
     # Authentication related methods
     #
 
-
-
     def set_password(self, raw_password):
-      """Sets the password for the current user
+        """Sets the password for the current user
 
-      :param raw_password:
-          The raw password which will be hashed and stored
-      """
-      self.password = security.generate_password_hash(raw_password, length=12)
+        :param raw_password:
+            The raw password which will be hashed and stored
+        """
+        self.password = security.generate_password_hash(
+            raw_password, length=12)
 
     @classmethod
     def get_by_auth_token(cls, user_id, token, subject='auth'):
-      """Returns a user object based on a user ID and token.
+        """Returns a user object based on a user ID and token.
 
-      :param user_id:
-          The user_id of the requesting user.
-      :param token:
-          The token string to be verified.
-      :returns:
-          A tuple ``(User, timestamp)``, with a user object and
-          the token timestamp, or ``(None, None)`` if both were not found.
-      """
-      token_key = cls.token_model.get_key(user_id, subject, token)
-      user_key = ndb.Key(cls, user_id)
-      # Use get_multi() to save a RPC call.
-      valid_token, user = ndb.get_multi([token_key, user_key])
-      if valid_token and user:
-          timestamp = int(time.mktime(valid_token.created.timetuple()))
-          return user, timestamp
+        :param user_id:
+            The user_id of the requesting user.
+        :param token:
+            The token string to be verified.
+        :returns:
+            A tuple ``(User, timestamp)``, with a user object and
+            the token timestamp, or ``(None, None)`` if both were not found.
+        """
+        token_key = cls.token_model.get_key(user_id, subject, token)
+        user_key = ndb.Key(cls, user_id)
+        # Use get_multi() to save a RPC call.
+        valid_token, user = ndb.get_multi([token_key, user_key])
+        if valid_token and user:
+            timestamp = int(time.mktime(valid_token.created.timetuple()))
+            return user, timestamp
 
-      return None, None
+        return None, None
 
     # Since the original create_user method calls user.put() (where the exception occurs), only *after*
     # calling cls.unique_model.create_multi(k for k, v in uniques), this means we'll have to delete
     # those created uniques (other they'll just stay as garbage data in the DB, while not allowing
     # the user to re-register with the same username/email/etc.
-    @classmethod 
+    @classmethod
     def remove_unique(cls, auth_id, unique_properties, **user_values):
         uniques = [('%s.auth_id:%s' % (cls.__name__, auth_id), 'auth_id')]
         print uniques
@@ -611,8 +646,7 @@ class User(webapp2_extras.appengine.auth.models.User):
                 uniques.append((key, name))
 
         # Delete the uniques
-        ndb.delete_multi(model.Key(cls.unique_model, k) for k,v in uniques)
-
+        ndb.delete_multi(model.Key(cls.unique_model, k) for k, v in uniques)
 
     @classmethod
     def create_user(cls, auth_id, unique_properties=None, **user_values):
@@ -638,17 +672,15 @@ def register_new_user(user_name, email, password, **kwd):
 
     unique_properties = ['email']
     user_data = user_model.create_user(
-            user_name,
-            unique_properties,
-            password_raw=password,
-            email=email,
-            **kwd
-            )
+        user_name,
+        unique_properties,
+        password_raw=password,
+        email=email,
+        **kwd
+    )
 
     if not user_data[0]:
-        raise ValueError('Unable to register user - the username "%s" or email "%s" is already registered' % (user_name, email))
+        raise ValueError(
+            'Unable to register user - the username "%s" or email "%s" is already registered' % (user_name, email))
 
     return user_data[1]
-
-
-
