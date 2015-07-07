@@ -4,7 +4,17 @@ import webapp2
 import data
 
 config = {
-    'config_data': 'config_data'
+    'webapp2_extras.auth': {
+        'user_model': 'data.User',
+        'user_attributes': [
+            'name',
+            'email',
+            'is_admin',
+        ]
+    },
+    'webapp2_extras.sessions': {
+        'secret_key': '6&kf5f6M9fb6e2jpc$RXQouhx@n6X7j^xJDji*Lk'
+    }
 }
 
 app = webapp2.WSGIApplication([
@@ -28,7 +38,7 @@ app = webapp2.WSGIApplication([
     UserRESTHandler(
         '/api/users',
         # You can extend it with your own custom user class
-        user_model=data.MyUser,
+        user_model=data.User,
         user_details_permission=PERMISSION_OWNER_USER,
         verify_email_address=True,
         verification_email={

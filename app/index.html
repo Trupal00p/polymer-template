@@ -13,37 +13,53 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Polymer Starter Kit" />
+    <meta name="description"
+      content="">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1">
+    <meta name="generator"
+      content="Polymer Starter Kit" />
     <title>Polymer Starter Kit</title>
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- Chrome for Android theme color -->
-    <meta name="theme-color" content="#303F9F">
+    <meta name="theme-color"
+      content="#303F9F">
 
     <!-- Web Application Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest"
+      href="manifest.json">
 
     <!-- Tile color for Win8 -->
-    <meta name="msapplication-TileColor" content="#3372DF">
+    <meta name="msapplication-TileColor"
+      content="#3372DF">
 
     <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Polymer Starter Kit">
-    <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+    <meta name="mobile-web-app-capable"
+      content="yes">
+    <meta name="application-name"
+      content="Polymer Starter Kit">
+    <link rel="icon"
+      sizes="192x192"
+      href="images/touch/chrome-touch-icon-192x192.png">
 
     <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-    <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable"
+      content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style"
+      content="black">
+    <meta name="apple-mobile-web-app-title"
+      content="Polymer Starter Kit">
+    <link rel="apple-touch-icon"
+      href="images/touch/apple-touch-icon.png">
 
     <!-- Tile icon for Win8 (144x144) -->
-    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileImage"
+      content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
     <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet"
+      href="styles/main.css">
     <!-- endbuild-->
 
     <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
@@ -51,13 +67,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- endbuild -->
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
-    <link rel="import" href="elements/elements.html">
+    <link rel="import"
+      href="elements/elements.html">
     <!-- endreplace-->
 </head>
 
-<body unresolved class="fullbleed layout vertical">
+<body unresolved
+  class="fullbleed layout vertical">
     <span id="browser-sync-binding"></span>
-    <template is="dom-bind" id="app">
+    <template is="dom-bind"
+      id="app">
 
         <paper-drawer-panel id="paperDrawerPanel">
             <div drawer>
@@ -68,36 +87,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </paper-toolbar>
 
                 <!-- Drawer Content -->
-                <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-                    <a data-route="home" href="/">
+                <paper-menu class="list"
+                  attr-for-selected="data-route"
+                  selected="{{route}}"
+                  on-iron-select="onMenuSelect">
+                    <a data-route="home"
+                      href="/">
                         <iron-icon icon="home"></iron-icon>
                         <span>Home</span>
                     </a>
 
-                    <a data-route="users" href="/users">
+                    <a data-route="users"
+                      href="/users">
                         <iron-icon icon="info"></iron-icon>
                         <span>Users</span>
                     </a>
 
-                    <a data-route="contact" href="/contact">
+                    <a data-route="contact"
+                      href="/contact">
                         <iron-icon icon="mail"></iron-icon>
                         <span>Contact 123</span>
                     </a>
-                    <a data-route="signup" href="/signup">
+                    <a data-route="signup"
+                      href="/signup">
                         <iron-icon icon="add-circle"></iron-icon>
                         <span>Sign Up</span>
                     </a>
-                    <a data-route="signin" href="/signin">
+                    <a data-route="signin"
+                      href="/signin">
                         <iron-icon icon="face"></iron-icon>
                         <span>Sign In</span>
                     </a>
                 </paper-menu>
             </div>
-            <paper-header-panel main mode="waterfall-tall">
+            <paper-header-panel main
+              mode="waterfall-tall">
 
                 <!-- Main Toolbar -->
                 <paper-toolbar id="mainToolbar">
-                    <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+                    <paper-icon-button id="paperToggle"
+                      icon="menu"
+                      paper-drawer-toggle></paper-icon-button>
                     <span class="flex"></span>
 
                     <!-- Toolbar icons -->
@@ -114,7 +144,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 <!-- Main Content -->
                 <div class="content">
-                    <iron-pages attr-for-selected="data-route" selected="{{route}}">
+                    <iron-pages attr-for-selected="data-route"
+                      selected="{{route}}">
 
                         <section data-route="home">
                             <paper-material elevation="1">
@@ -129,7 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 <p class="paper-font-body2">This is another card.</p>
                             </paper-material>
 
-                            <paper-material elevation="1" class="paper-font-body2">
+                            <paper-material elevation="1"
+                              class="paper-font-body2">
                                 <h1 id="license">License</h1>
                                 <p>Everything in this repo is BSD style license unless otherwise specified.</p>
                                 <p>Copyright (c) 2015 The Polymer Authors. All rights reserved.</p>
@@ -166,7 +198,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         <section data-route="signup">
                             <paper-material elevation="1">
-                                <sign-up-form id='sign-up-form'>
+                                <sign-up-form id='sign-up-form'></sign-up-form>
                             </paper-material>
                         </section>
 
@@ -193,11 +225,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-header-panel>
         </paper-drawer-panel>
 
-        <paper-toast id="caching-complete" duration="6000" text="Caching complete! This app will work offline.">
+        <paper-toast id="caching-complete"
+          duration="6000"
+          text="Caching complete! This app will work offline.">
         </paper-toast>
 
-        <platinum-sw-register auto-register clients-claim skip-waiting on-service-worker-installed="displayInstalledToast">
-            <platinum-sw-cache default-cache-strategy="networkFirst" precache-file="precache.json">
+        <platinum-sw-register auto-register
+          clients-claim
+          skip-waiting
+          on-service-worker-installed="displayInstalledToast">
+            <platinum-sw-cache default-cache-strategy="networkFirst"
+              precache-file="precache.json">
             </platinum-sw-cache>
         </platinum-sw-register>
 

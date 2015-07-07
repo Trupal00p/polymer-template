@@ -10,7 +10,11 @@ handlers:
    static_files: index.html
    upload: index.html
 
- - url: /data/.*
+ - url: /precache.json
+   static_files: precache.json
+   upload: precache.json
+
+ - url: /api/.*
    script: main.app
    secure: always
 
@@ -32,3 +36,27 @@ handlers:
  - url: /.*
    static_files: 404.html
    upload: 404.html
+
+libraries:
+- name: webapp2
+  version: latest
+
+- name: PIL
+  version: "1.1.7"
+
+- name: jinja2
+  version: "2.6"
+
+- name: pycrypto
+  version: "2.6"
+
+- name: ssl
+  version: latest
+
+builtins:
+- deferred: on
+
+- appstats: on
+
+inbound_services:
+- warmup

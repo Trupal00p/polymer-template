@@ -6,13 +6,13 @@ A lot of the webapp2 user authentication and registration implementation is base
 import json
 import time
 from urllib import urlencode
-import webapp2_extras.appengine.auth.models
+from google.appengine.ext import ndb
+from google.appengine.ext.ndb import model
+from webapp2_extras.appengine.auth.models import User as WebApp2User
 import webapp2
 from jinja2 import Template
 from google.appengine.api import mail
 from webapp2_extras import auth
-from google.appengine.ext import ndb
-from google.appengine.ext.ndb import model
 from webapp2_extras import security
 from webapp2_extras.auth import InvalidAuthIdError, InvalidPasswordError
 from webapp2_extras import sessions
@@ -582,7 +582,7 @@ class UserRESTHandler(webapp2.Route):
             url.rstrip(' /') + '<model_id:(/.+)?|/>', get_user_rest_class(**kwd))
 
 
-class User(webapp2_extras.appengine.auth.models.User):
+class User(WebApp2User):
 
     """The User class - you can inherit the class in order to extend it with additional properties/methods.
     Uses code from: https://github.com/abahgat/webapp2-user-accounts"""

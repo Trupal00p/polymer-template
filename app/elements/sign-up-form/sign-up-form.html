@@ -1,0 +1,73 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import"
+  href="..\..\bower_components/polymer/polymer.html">
+<dom-module id="sign-up-form">
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <form is="iron-form"
+          id="form"
+          method="post"
+          action="/api/users"
+          action="/form/handler">
+            <paper-input label="Name"
+              name='name'
+              value='{{test}}'></paper-input>
+            <paper-input label="Email"
+              name='email'
+              value='{{email}}'></paper-input>
+            <paper-input type='password'
+              name='password'
+              label="Password"></paper-input>
+            <input type="hidden"
+              value='{{email}}'
+              name='user_name'>
+            <button>{{test}}</button>
+            <paper-button raised>flat button</paper-button>
+            <p>{{response}}</p>
+        </form>
+    </template>
+</dom-module>
+<script>
+    (function()
+    {
+        Polymer(
+        {
+            is: 'sign-up-form',
+            properties:
+            {
+                email: String,
+                test: String,
+                response: String,
+            },
+            listeners:
+            {
+                'form.iron-form-response': 'handle_reponse',
+                'form.iron-form-error': 'handle_error'
+            },
+
+            handle_reponse: function(response_details)
+            {
+                var user_details = response_details.detail;
+                this.response = JSON.stringify(user_details);
+            },
+
+            handle_error: function(error_details)
+            {
+                var response = error_details.detail.request.xhr.response
+                this.response = JSON.stringify(response);
+            }
+        });
+    })();
+</script>
