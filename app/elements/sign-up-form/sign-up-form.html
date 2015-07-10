@@ -9,6 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import"
   href="..\..\bower_components/polymer/polymer.html">
+<link rel="import"
+  href="/elements/mailgun-email-input/mailgun-email-input.html">
 <dom-module id="sign-up-form">
     <style>
         :host {
@@ -19,16 +21,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <form is="iron-form"
           id="form"
           method="post"
-          action="/api/users"
-          action="/form/handler">
+          action="/api/users">
             <paper-input label="Name"
               name='name'
+              required
+              validator='validate_name'
               value='{{test}}'></paper-input>
-            <paper-input label="Email"
-              name='email'
-              value='{{email}}'></paper-input>
+            <mailgun-email-input required
+              api_key='pubkey-29b0aa9272debff0d90fad2d8d30d07d'></mailgun-email-input>
             <paper-input type='password'
               name='password'
+              required
               label="Password"></paper-input>
             <input type="hidden"
               value='{{email}}'
@@ -54,13 +57,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             listeners:
             {
                 'form.iron-form-response': 'handle_reponse',
-                'form.iron-form-error': 'handle_error'
+                'form.iron-form-error': 'handle_error',
+                'form.iron-form-invalid': 'handle_invalid'
+            },
+
+            validate_name: function(value)
+            {
+                if (value = 'test')
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             },
 
             handle_reponse: function(response_details)
             {
                 var user_details = response_details.detail;
                 this.response = JSON.stringify(user_details);
+            },
+
+            handle_invalid: function()
+            {
+
+                this.response = 'validation failed'
             },
 
             handle_error: function(error_details)
