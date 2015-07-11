@@ -7,7 +7,6 @@ config = {
     'webapp2_extras.auth': {
         'user_model': 'data.User',
         'user_attributes': [
-            'name',
             'email',
             'is_admin',
         ]

@@ -28,6 +28,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               validator='validate_name'
               value='{{test}}'></paper-input>
             <mailgun-email-input required
+              name='email'
+              value='{{email}}'
               api_key='pubkey-29b0aa9272debff0d90fad2d8d30d07d'></mailgun-email-input>
             <paper-input type='password'
               name='password'
@@ -40,6 +42,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-button raised>flat button</paper-button>
             <p>{{response}}</p>
         </form>
+        <iron-localstorage name="user-storage"
+          value="{{userdata}}"></iron-localstorage>
     </template>
 </dom-module>
 <script>
@@ -53,12 +57,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 email: String,
                 test: String,
                 response: String,
+                userdata:
+                {
+                    type: Object,
+                }
             },
             listeners:
             {
                 'form.iron-form-response': 'handle_reponse',
                 'form.iron-form-error': 'handle_error',
                 'form.iron-form-invalid': 'handle_invalid'
+            },
+
+            set_user_data: function(userdata)
+            {
+                this.set('userdata', userdata)
             },
 
             validate_name: function(value)
@@ -76,6 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             handle_reponse: function(response_details)
             {
                 var user_details = response_details.detail;
+                this.set_user_data(user_details)
                 this.response = JSON.stringify(user_details);
             },
 
