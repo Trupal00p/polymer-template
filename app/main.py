@@ -22,10 +22,10 @@ app = webapp2.WSGIApplication([
         '/api/mymodel',  # The base URL for this model's endpoints
         data.MyModel,  # The model to wrap
         permissions={
-            'GET': PERMISSION_ANYONE,
+            'GET': PERMISSION_OWNER_USER,
             'POST': PERMISSION_LOGGED_IN_USER,
             'PUT': PERMISSION_OWNER_USER,
-            'DELETE': PERMISSION_ADMIN
+            'DELETE': PERMISSION_OWNER_USER
         },
 
         # Will be called for every PUT, right before the model is saved (also

@@ -5,14 +5,14 @@ from rest_gae.users import User as RESTUser
 class User(RESTUser):
 
     """Our own user class"""
-    prop1 = ndb.StringProperty(required=True)
-    prop2 = ndb.StringProperty()
-
-    # This is optional, but if we use a RESTMeta - we must inherit it (and not
-    # run over the original properties)
-    class RESTMeta(RESTUser.RESTMeta):
-        excluded_output_properties = RESTUser.RESTMeta.excluded_output_properties + \
-            ['prop2']
+    # prop1 = ndb.StringProperty(required=True)
+    # prop2 = ndb.StringProperty()
+    #
+    # # This is optional, but if we use a RESTMeta - we must inherit it (and not
+    # # run over the original properties)
+    # class RESTMeta(RESTUser.RESTMeta):
+    #     excluded_output_properties = RESTUser.RESTMeta.excluded_output_properties + \
+    #         ['prop2']
 
 
 class MyModel(ndb.Model):
