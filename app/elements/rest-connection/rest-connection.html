@@ -1,0 +1,407 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import"
+  href="..\..\bower_components/polymer/polymer.html">
+<link rel="import"
+  href="..\..\bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="rest-connection">
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <iron-ajax id='getter'
+          url='[[requestUrl]]'
+          params='[[params]]'
+          method='GET'
+          content-type='[[contentType]]'
+          handle-as='[[handleAs]]'
+          with-credentials='[[withCredentials]]'
+          loading={{loading}}></iron-ajax>
+
+        <iron-ajax id='poster'
+          url='[[requestUrl]]'
+          method='POST'
+          content-type='[[contentType]]'
+          body='[[body]]'
+          handle-as='[[handleAs]]'
+          with-credentials='[[withCredentials]]'
+          loading={{loading}}></iron-ajax>
+
+        <iron-ajax id='putter'
+          url='[[requestUrl]]'
+          method='PUT'
+          content-type='[[contentType]]'
+          body='[[body]]'
+          handle-as='[[handleAs]]'
+          with-credentials='[[withCredentials]]'
+          loading={{loading}}></iron-ajax>
+
+        <iron-ajax id='deleter'
+          url='[[requestUrl]]'
+          params='[[params]]'
+          method='DELETE'
+          content-type='[[contentType]]'
+          handle-as='[[handleAs]]'
+          with-credentials='[[withCredentials]]'
+          loading={{loading}}></iron-ajax>
+    </template>
+</dom-module>
+<script>
+    (function()
+    {
+        Polymer(
+        {
+            is: 'rest-connection',
+
+            properties:
+            {
+                modelUrl:
+                {
+                    type: String,
+                    value: '',
+                    // notify: true
+                },
+
+                modelId:
+                {
+                    type: String,
+                    value: null,
+                    notify: true
+                },
+
+                model:
+                {
+                    type: Object,
+                    value: function()
+                    {
+                        return {};
+                    },
+                    notify: true,
+                    observer: '_set_use_model'
+                },
+
+                modelList:
+                {
+                    type: Array,
+                    value: function()
+                    {
+                        return [];
+                    },
+                    notify: true,
+                    observer: '_set_use_list'
+                },
+
+                useCollection:
+                {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+
+                requestUrl:
+                {
+                    type: String,
+                    value: '',
+                    notify: true
+                },
+
+                params:
+                {
+                    type: Object,
+                    value: function()
+                    {
+                        return {}
+                    },
+                    notify: true,
+                },
+
+                body:
+                {
+                    type: String,
+                    value: '',
+                    notify: true,
+                    // computed: '_set_body(useCollection)'
+                },
+
+                loading:
+                {
+                    type: Boolean,
+                    notify: true,
+                    readOnly: true
+                },
+
+                headers:
+                {
+                    type: Object,
+                    value: function()
+                    {
+                        return {};
+                    }
+                },
+
+                contentType:
+                {
+                    type: String,
+                    value: 'application/x-www-form-urlencoded'
+                },
+
+                handleAs:
+                {
+                    type: String,
+                    value: 'json'
+                },
+
+                withCredentials:
+                {
+                    type: Boolean,
+                    value: false
+                },
+
+            },
+
+            listeners:
+            {
+                'getter.response': 'handle_get_reponse',
+                'getter.error': 'handle_error',
+                'poster.response': 'handle_post_reponse',
+                'poster.error': 'handle_error',
+                'putter.response': 'handle_put_reponse',
+                'putter.error': 'handle_error',
+                'deleter.response': 'handle_delete_reponse',
+                'deleter.error': 'handle_error',
+            },
+
+            _set_use_list: function(newValue, oldValue)
+            {
+                if (typeof oldValue !== 'undefined')
+                {
+                    this.useCollection = true;
+                }
+            },
+
+            _set_use_model: function(newValue, oldValue)
+            {
+                if (typeof oldValue !== 'undefined')
+                {
+                    this.useCollection = false;
+                }
+            },
+
+            handle_get_reponse: function(event, data)
+            {
+                var response = data.response
+
+                if (Object.prototype.toString.call(response.results) !== '[object Array]')
+                {
+                    // store model
+                    this.model = response;
+                }
+                else
+                {
+                    // store list of models
+                    this.modelList = response.results;
+                }
+
+                this.fire('response', event)
+
+                console.log('Retrieved existing model(s)');
+
+            },
+
+            handle_post_reponse: function(event, data)
+            {
+                var response = data.response
+
+                if (response.length == 1)
+                {
+                    this.model = response[0];
+                }
+                else
+                {
+                    this.modelList = response;
+                }
+
+                this.fire('response', event)
+
+                console.log('Saved new model(s)');
+
+            },
+
+            handle_put_reponse: function(event, data)
+            {
+                var response = data.response
+
+                if (response.length == 1)
+                {
+                    this.model = response[0];
+                }
+                else
+                {
+                    this.modelList = response;
+                }
+
+                this.fire('response', event)
+
+                console.log('Saved existing model(s)');
+
+            },
+
+            handle_delete_reponse: function(event, data)
+            {
+                var response = data.response
+
+                this.modelList = [];
+                this.model = null;
+
+                this.fire('response', event)
+
+                console.log('Deleted model(s)');
+
+
+            },
+
+            handle_error: function(event, v1, v2)
+            {
+                var error_code = event.detail.request.xhr.status
+
+                switch (error_code)
+                {
+                    case 400:
+                        //handle general error
+                        alert('method not allowed')
+                        break;
+                    case 401:
+                        //handle not authorized
+                        alert('user not authorized')
+                        break;
+                    case 403:
+                        //handle method not allowed
+                        alert('permission denied')
+                        break;
+                    case 405:
+                        //handle method not allowed
+                        alert('method not allowed')
+                        break;
+                }
+
+                this.fire('error', event)
+            },
+
+            //---GET ACTIONS---
+
+            getModel: function(modelId)
+            {
+                this.requestUrl = this.modelUrl + "/" + modelId;
+
+                this.params = {};
+
+                this.$.getter.generateRequest();
+            },
+
+            getModels: function(querystring)
+            {
+                this.requestUrl = this.modelUrl;
+
+                if (typeof querystring !== 'undefined')
+                {
+                    this.params.q = querystring;
+                }
+                else
+                {
+                    this.params = {}
+                }
+
+                this.$.getter.generateRequest();
+            },
+
+            saveModel: function()
+            {
+                //no model id = new model - send post request
+                if (typeof this.model.id === 'undefined')
+                {
+                    this.requestUrl = this.modelUrl;
+
+                    this.body = JSON.stringify(this.model);
+
+                    this.$.poster.generateRequest();
+                }
+                //update existing model - send put model request
+                else
+                {
+                    this.requestUrl = this.modelUrl + "/" + this.model.id;
+
+                    this.body = JSON.stringify(this.model);
+
+                    this.$.putter.generateRequest();
+                }
+
+
+            },
+
+            saveModels: function(models)
+            {
+                //split list into new and existing models
+                var put_list = [];
+                var post_list = [];
+
+                for (i = 0; i < models.length; i++)
+                {
+                    if (typeof models[i].id === 'undefined')
+                    {
+                        post_list.push(models[i]);
+                    }
+                    else
+                    {
+                        put_list.push(models[i]);
+                    }
+                }
+
+                //no model id = new model - send post request
+                if (post_list.length >= 1)
+                {
+                    this.requestUrl = this.modelUrl;
+
+                    this.body = JSON.stringify(post_list);
+
+                    this.$.poster.generateRequest();
+                }
+
+                //update existing model - send put model request
+                if (put_list.length >= 1)
+                {
+                    this.requestUrl = this.modelUrl;
+
+                    this.body = JSON.stringify(put_list);
+
+                    this.$.putter.generateRequest();
+                };
+
+
+            },
+
+            deleteModel: function()
+            {
+                this.requestUrl = this.modelUrl + "/" + this.modelId;
+                this.$.deleter.generateRequest();
+            },
+
+            deleteModels: function()
+            {
+                this.requestUrl = this.modelUrl;
+                this.$.deleter.generateRequest();
+            }
+
+        });
+    })();
+</script>

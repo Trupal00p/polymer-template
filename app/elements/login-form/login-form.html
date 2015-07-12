@@ -1,0 +1,96 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import"
+  href="..\..\bower_components/polymer/polymer.html">
+<!-- <link rel="import"
+  href="..\..\bower_components/iron-localstorage/iron-localstorage.html"> -->
+
+<dom-module id="login-form">
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <form is="iron-form"
+          id="form"
+          method="post"
+          action="/api/users/login">
+            <paper-input required
+              name='user_name'
+              label="Email"></paper-input>
+            <paper-input type='password'
+              name='password'
+              required
+              label="Password"></paper-input>
+            <button>Submit</button>
+            <paper-button raised>flat button</paper-button>
+            <p>{{response}}</p>
+        </form>
+        <!-- <iron-localstorage name="app-user-storage"
+          value="{{userdata}}"
+          on-iron-localstorage-load-empty="initializeDefaultValue"></iron-localstorage> -->
+    </template>
+</dom-module>
+<script>
+    (function()
+    {
+        Polymer(
+        {
+            is: 'login-form',
+            properties:
+            {
+                email:
+                {
+                    type: String,
+                },
+                response:
+                {
+                    type: String,
+                },
+                userdata:
+                {
+                    type: Object,
+                }
+            },
+            listeners:
+            {
+                'form.iron-form-response': 'handle_reponse',
+                'form.iron-form-error': 'handle_error',
+                'form.iron-form-invalid': 'handle_invalid'
+            },
+
+            // initializes default if nothing has been stored
+            initializeDefaultValue: function()
+            {
+                this.userdata = {}
+            },
+
+            handle_reponse: function(response_details)
+            {
+                //auth cookie set in server response
+                var user_details = response_details.detail;
+                this.set('userdata', user_details)
+            },
+
+            handle_invalid: function()
+            {
+
+                this.response = 'validation failed'
+            },
+
+            handle_error: function(error_details)
+            {
+                var response = error_details.detail.request.xhr.response
+                this.response = JSON.stringify(response);
+            }
+        });
+    })();
+</script>

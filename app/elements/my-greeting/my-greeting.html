@@ -27,7 +27,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <rest-connection id='restcon'
           model-url='/api/mymodel'></rest-connection>
         <paper-button raised
-          on-click='sendget'>send get</paper-button>
+          on-click='getall'>get all</paper-button>
+        <paper-button raised
+          on-click='sendget'>get one</paper-button>
+        <paper-button raised
+          on-click='sendput'>send put</paper-button>
+        <paper-button raised
+          on-click='sendpost'>send post</paper-button>
+        <paper-button raised
+          on-click='putmany'>putmany</paper-button>
+        <paper-button raised
+          on-click='postmany'>post many</paper-button>
+        <paper-button raised
+          on-click='deleteall'>delete all</paper-button>
         <h1 class="paper-font-display1">
             <span>{{greeting}}</span>
         </h1>
@@ -59,17 +71,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 'restcon.response': 'restresp'
             },
 
+            getall: function()
+            {
+                this.$.restcon.getModels();
+            },
+
             sendget: function()
             {
-                // this.$.restcon.deleteModel('ahBkZXZ-cG9seW1lci10ZXN0chQLEgdNeU1vZGVsGICAgICA0IAIDA');
-                this.$.restcon.getModel('ahBkZXZ-cG9seW1lci10ZXN0chQLEgdNeU1vZGVsGICAgICA4JcKDA');
-                // this.$.restcon.getModels();
-                // newmod = {
-                //     'property1': 'testasdfasdf',
-                //     'property2': "aslfjasdf;lkasj"
-                // }
-                // this.$.restcon.model = newmod;
-                // this.$.restcon.save();
+
+                this.$.restcon.getModel(this.$.restcon.modelList[0].id);
+            },
+
+            sendput: function()
+            {
+                this.$.restcon.model.property1 = Date().toString();
+                this.$.restcon.saveModel();
+            },
+
+            putmany: function()
+            {
+                this.$.restcon.saveModels(this.$.restcon.modelList);
+            },
+
+            sendpost: function()
+            {
+                newmod = {
+                    'property1': 'testasdfasdf',
+                    'property2': "aslfjasdf;lkasj"
+                }
+                this.$.restcon.model = newmod;
+                this.$.restcon.saveModel();
+            },
+
+            postmany: function()
+            {
+                newmod = [
+                {
+                    'property1': 'model1sdl;kfa',
+                    'property2': "model1as;dlkf;lkasj"
+                },
+                {
+                    'property1': 'model2sdl;kfa',
+                    'property2': "model2as;dlkf;lkasj"
+                }, ]
+                this.$.restcon.saveModels(newmod);
+            },
+
+            deleteall: function()
+            {
+                this.$.restcon.deleteModels();
             },
 
             restresp: function()
