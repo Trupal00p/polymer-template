@@ -24,8 +24,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
     </style>
     <template>
+        <drug-barcode-parser></drug-barcode-parser>
+
         <rest-connection id='restcon'
-          model-url='/api/mymodel'></rest-connection>
+          resource-url='/api/myresource'></rest-connection>
         <paper-button raised
           on-click='getall'>get all</paper-button>
         <paper-button raised
@@ -73,24 +75,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             getall: function()
             {
-                this.$.restcon.getModels();
+                this.$.restcon.getResources();
             },
 
             sendget: function()
             {
 
-                this.$.restcon.getModel(this.$.restcon.modelList[0].id);
+                this.$.restcon.getResource(this.$.restcon.resourceList[0].id);
             },
 
             sendput: function()
             {
-                this.$.restcon.model.property1 = Date().toString();
-                this.$.restcon.saveModel();
+                this.$.restcon.resource.property1 = Date().toString();
+                this.$.restcon.saveResource();
             },
 
             putmany: function()
             {
-                this.$.restcon.saveModels(this.$.restcon.modelList);
+                this.$.restcon.saveResources(this.$.restcon.resourceList);
             },
 
             sendpost: function()
@@ -99,27 +101,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     'property1': 'testasdfasdf',
                     'property2': "aslfjasdf;lkasj"
                 }
-                this.$.restcon.model = newmod;
-                this.$.restcon.saveModel();
+                this.$.restcon.resource = newmod;
+                this.$.restcon.saveResource();
             },
 
             postmany: function()
             {
                 newmod = [
                 {
-                    'property1': 'model1sdl;kfa',
-                    'property2': "model1as;dlkf;lkasj"
+                    'property1': 'resource1sdl;kfa',
+                    'property2': "resource1as;dlkf;lkasj"
                 },
                 {
-                    'property1': 'model2sdl;kfa',
-                    'property2': "model2as;dlkf;lkasj"
+                    'property1': 'resource2sdl;kfa',
+                    'property2': "resource2as;dlkf;lkasj"
                 }, ]
-                this.$.restcon.saveModels(newmod);
+                this.$.restcon.saveResources(newmod);
             },
 
             deleteall: function()
             {
-                this.$.restcon.deleteModels();
+                this.$.restcon.deleteResources();
             },
 
             restresp: function()

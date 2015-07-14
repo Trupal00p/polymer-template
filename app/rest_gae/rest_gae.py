@@ -31,6 +31,8 @@ except ImportError as e:
 # The REST permissions
 PERMISSION_ANYONE = 'anyone'
 PERMISSION_LOGGED_IN_USER = 'logged_in_user'
+PERMISSION_ORGANIZATION = 'organization'
+PERMISSION_ORGANIZATION_ROLE = 'organization_role'
 PERMISSION_OWNER_USER = 'owner_user'
 PERMISSION_ADMIN = 'admin'
 
@@ -536,6 +538,16 @@ class BaseRESTHandler(webapp2.RequestHandler):
                 input_properties[
                     cls.RESTMeta.user_owner_property] = self.user.key
 
+        # Set the organization property to the currently logged-in user (if
+        # it's defined for the model class)
+        if hasattr(cls, 'RESTMeta') and hasattr(cls.RESTMeta, 'user_organization_property'):
+            if not model and self.user:
+                # Only perform this update when creating a new model - otherwise, each update might change this (very problematic in case an
+                # admin updates another user's model instance - it'll change
+                # model ownership from that user to the admin)
+                input_properties[
+                    cls.RESTMeta.user_organization_property] = self.user.organization
+
         if not model:
             # Create a new model instance
             model = cls(**input_properties)
@@ -984,6 +996,24 @@ def get_rest_class(ndb_model, base_url, **kwd):
         def get_model_owner(self, model):
             """Returns the user owner of the given `model` (relies on RESTMeta.user_owner_property)"""
             return getattr(model, self.user_owner_property)
+
+        @webapp2.cached_property
+        def user_organization_property(self):
+            """Returns the name of the user_organization_property"""
+            return self.model.RESTMeta.user_organization_property
+
+        def get_model_organization(self, model):
+            """Returns the user owner of the given `model` (relies on RESTMeta.user_organization_property)"""
+            return getattr(model, self.user_organization_property)
+
+        @webapp2.cached_property
+        def user_role_property(self):
+            """Returns the name of the user_role_property"""
+            return self.model.RESTMeta.user_role_property
+
+        def get_model_role(self, model):
+            """Returns the user owner of the given `model` (relies on RESTMeta.user_role_property)"""
+            return getattr(model, self.user_role_property)
 
     # Return the class statically initialized with given input arguments
     return RESTHandlerClass

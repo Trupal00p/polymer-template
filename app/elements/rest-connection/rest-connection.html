@@ -66,21 +66,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             properties:
             {
-                modelUrl:
+                resourceUrl:
                 {
                     type: String,
                     value: '',
                     // notify: true
                 },
 
-                modelId:
+                resourceId:
                 {
                     type: String,
                     value: null,
                     notify: true
                 },
 
-                model:
+                resource:
                 {
                     type: Object,
                     value: function()
@@ -88,10 +88,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         return {};
                     },
                     notify: true,
-                    observer: '_set_use_model'
+                    observer: '_set_use_resource'
                 },
 
-                modelList:
+                resourceList:
                 {
                     type: Array,
                     value: function()
@@ -190,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             },
 
-            _set_use_model: function(newValue, oldValue)
+            _set_use_resource: function(newValue, oldValue)
             {
                 if (typeof oldValue !== 'undefined')
                 {
@@ -204,18 +204,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 if (Object.prototype.toString.call(response.results) !== '[object Array]')
                 {
-                    // store model
-                    this.model = response;
+                    // store resource
+                    this.resource = response;
                 }
                 else
                 {
-                    // store list of models
-                    this.modelList = response.results;
+                    // store list of resources
+                    this.resourceList = response.results;
                 }
 
                 this.fire('response', event)
 
-                console.log('Retrieved existing model(s)');
+                console.log('Retrieved existing resource(s)');
 
             },
 
@@ -225,16 +225,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 if (response.length == 1)
                 {
-                    this.model = response[0];
+                    this.resource = response[0];
                 }
                 else
                 {
-                    this.modelList = response;
+                    this.resourceList = response;
                 }
 
                 this.fire('response', event)
 
-                console.log('Saved new model(s)');
+                console.log('Saved new resource(s)');
 
             },
 
@@ -244,16 +244,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 if (response.length == 1)
                 {
-                    this.model = response[0];
+                    this.resource = response[0];
                 }
                 else
                 {
-                    this.modelList = response;
+                    this.resourceList = response;
                 }
 
                 this.fire('response', event)
 
-                console.log('Saved existing model(s)');
+                console.log('Saved existing resource(s)');
 
             },
 
@@ -261,12 +261,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             {
                 var response = data.response
 
-                this.modelList = [];
-                this.model = null;
+                this.resourceList = [];
+                this.resource = null;
 
                 this.fire('response', event)
 
-                console.log('Deleted model(s)');
+                console.log('Deleted resource(s)');
 
 
             },
@@ -300,18 +300,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             //---GET ACTIONS---
 
-            getModel: function(modelId)
+            getResource: function(resourceId)
             {
-                this.requestUrl = this.modelUrl + "/" + modelId;
+                this.requestUrl = this.resourceUrl + "/" + resourceId;
 
                 this.params = {};
 
                 this.$.getter.generateRequest();
             },
 
-            getModels: function(querystring)
+            getResources: function(querystring)
             {
-                this.requestUrl = this.modelUrl;
+                this.requestUrl = this.resourceUrl;
 
                 if (typeof querystring !== 'undefined')
                 {
@@ -325,23 +325,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.getter.generateRequest();
             },
 
-            saveModel: function()
+            saveResource: function()
             {
-                //no model id = new model - send post request
-                if (typeof this.model.id === 'undefined')
+                //no resource id = new resource - send post request
+                if (typeof this.resource.id === 'undefined')
                 {
-                    this.requestUrl = this.modelUrl;
+                    this.requestUrl = this.resourceUrl;
 
-                    this.body = JSON.stringify(this.model);
+                    this.body = JSON.stringify(this.resource);
 
                     this.$.poster.generateRequest();
                 }
-                //update existing model - send put model request
+                //update existing resource - send put resource request
                 else
                 {
-                    this.requestUrl = this.modelUrl + "/" + this.model.id;
+                    this.requestUrl = this.resourceUrl + "/" + this.resource.id;
 
-                    this.body = JSON.stringify(this.model);
+                    this.body = JSON.stringify(this.resource);
 
                     this.$.putter.generateRequest();
                 }
@@ -349,38 +349,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             },
 
-            saveModels: function(models)
+            saveResources: function(resources)
             {
-                //split list into new and existing models
+                //split list into new and existing resources
                 var put_list = [];
                 var post_list = [];
 
-                for (i = 0; i < models.length; i++)
+                for (i = 0; i < resources.length; i++)
                 {
-                    if (typeof models[i].id === 'undefined')
+                    if (typeof resources[i].id === 'undefined')
                     {
-                        post_list.push(models[i]);
+                        post_list.push(resources[i]);
                     }
                     else
                     {
-                        put_list.push(models[i]);
+                        put_list.push(resources[i]);
                     }
                 }
 
-                //no model id = new model - send post request
+                //no resource id = new resource - send post request
                 if (post_list.length >= 1)
                 {
-                    this.requestUrl = this.modelUrl;
+                    this.requestUrl = this.resourceUrl;
 
                     this.body = JSON.stringify(post_list);
 
                     this.$.poster.generateRequest();
                 }
 
-                //update existing model - send put model request
+                //update existing resource - send put resource request
                 if (put_list.length >= 1)
                 {
-                    this.requestUrl = this.modelUrl;
+                    this.requestUrl = this.resourceUrl;
 
                     this.body = JSON.stringify(put_list);
 
@@ -390,15 +390,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             },
 
-            deleteModel: function()
+            deleteResource: function()
             {
-                this.requestUrl = this.modelUrl + "/" + this.modelId;
+                this.requestUrl = this.resourceUrl + "/" + this.resourceId;
                 this.$.deleter.generateRequest();
             },
 
-            deleteModels: function()
+            deleteResources: function()
             {
-                this.requestUrl = this.modelUrl;
+                this.requestUrl = this.resourceUrl;
                 this.$.deleter.generateRequest();
             }
 
